@@ -17,7 +17,7 @@ typedef struct PID
 	//不需要修改
   float Error;        //偏差
   float Integral;     //积分
-	float Dout;
+	//float Dout;
 	float last_Error;
   float Output;
 }PID_Type; 
