@@ -7,7 +7,7 @@
 
 void PID_Normal(PID_Type*PID,const float target,const float measure)
 {
-	float Pout,Iout,Error_abs;
+	float Pout,Iout,Error_abs,Dout;
 	PID->Error  = target - measure;
 	Error_abs=fabs(PID->Error);
 	if(PID->Max_Error!=0)
@@ -29,16 +29,16 @@ void PID_Normal(PID_Type*PID,const float target,const float measure)
 //	PID->Dout=PID->Kd*PID->Kd_freq*(PID->Error - PID->last_Error)+(1.0f-PID->Kd_freq * PID_NORMAL_TIME)*PID->Dout;
 //	PID->last_Error=PID->Error;
 	
-	PID->Dout=PID->Kd*(PID->Error-PID->last_Error);
+	Dout=PID->Kd*(PID->Error-PID->last_Error)/PID_NORMAL_TIME;
 	PID->last_Error=PID->Error;
 	
-	PID->Output = Pout + Iout + PID->Dout;
+	PID->Output = Pout + Iout + Dout;
 	                    
 }
 
 void PID_AlterI(PID_Type*PID,const float target,const float measure,const float limit_A,const float limit_B)
 {
-	float Pout,Iout,Ki_num,Error_abs,temp;
+	float Pout,Iout,Ki_num,Error_abs,temp,Dout;
 	PID->Error  = target - measure;
 	Error_abs=fabs(PID->Error);
 	if(PID->Max_Error!=0)
@@ -63,10 +63,10 @@ void PID_AlterI(PID_Type*PID,const float target,const float measure,const float 
 //	PID->Dout=PID->Kd*PID->Kd_freq*(PID->Error - PID->last_Error)+(1.0f-PID->Kd_freq * PID_ALTERI_TIME)*PID->Dout;
 //	PID->last_Error=PID->Error;
 	
-	PID->Dout=PID->Kd*(PID->Error-PID->last_Error);
+	Dout=PID->Kd*(PID->Error-PID->last_Error)/PID_ALTERI_TIME;
 	PID->last_Error=PID->Error;
 	
-	PID->Output = Pout + Iout + PID->Dout;
+	PID->Output = Pout + Iout + Dout;
 	                    
 }
 
