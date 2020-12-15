@@ -14,6 +14,7 @@
 #include "ANO_DT.h"
 #include "DirectIMU.h"
 #include "spl06.h"
+#include "GPS.h"
 
 typedef struct
 {

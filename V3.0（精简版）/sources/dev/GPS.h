@@ -33,9 +33,8 @@ typedef struct{
  
 extern gps_data GPS;
 
- 
- 
-void READ_GPS_DATA(void);
-void Init_GPS(void);
+void GPS_Init(void);
+void GPS_ReadData(void);
+void GPS_Cal(void);
 
 #endif

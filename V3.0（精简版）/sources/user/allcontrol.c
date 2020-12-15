@@ -68,7 +68,7 @@ void vAllInit()
 	vPPMInit();
 	//USART1_init(115200);
 	uart6_init(115200);
-	uart2_init(115200);
+	//uart2_init(115200);
 	
 	vLEDInit();
 	I2c_Soft_Init();
@@ -76,6 +76,7 @@ void vAllInit()
 	AK8975_Init();
 	SPL06_Init();
 	vMotorInit();
+	GPS_Init();
 	
 	//参数初始化
 	MyDrone.State=Lock;
@@ -110,7 +111,8 @@ void vDroneLock()
 				case 1:
 				{
 					vRemoteDataHandle(&xRemote);
-					if(xRemote.Ch1_Roll>1800&&xRemote.Ch3_Thro>1800&&xRemote.Ch2_Pitch>1800&&xRemote.Ch4_Yaw>1800){vDroneCalibration();}
+					if(xRemote.Ch1_Roll>1800&&xRemote.Ch3_Thro>1800&&xRemote.Ch2_Pitch<1200&&xRemote.Ch4_Yaw<1200){vDroneCalibration();}
+					GPS_ReadData();
 					break;}
 				default:break;
 			}
@@ -225,14 +227,14 @@ static void vPIDParaInit()
 {
 	//角度环
 	PID_Roll_Angle.Kp = 3.0;   //0.3 1.5
-	PID_Roll_Angle.Ki = 0;
+	PID_Roll_Angle.Ki = 0.1;
 	PID_Roll_Angle.Kd = 0;
 	PID_Roll_Angle.Kd_freq=5.0f;
 	PID_Roll_Angle.Max_Error=40.0f;
 	PID_Roll_Angle.IntIimit=200.0f;
 	
 	PID_Pitch_Angle.Kp = 3.0;//0.3  1.8
-	PID_Pitch_Angle.Ki = 0;
+	PID_Pitch_Angle.Ki = 0.1;
 	PID_Pitch_Angle.Kd = 0;
 	PID_Pitch_Angle.Kd_freq=5.0f;
 	PID_Pitch_Angle.Max_Error=40.0f;
@@ -252,7 +254,7 @@ static void vPIDParaInit()
 //	PID_Pitch_Angle.Max_Error=40.0f;
 //	PID_Pitch_Angle.IntIimit=200.0f;
 	
-	PID_Yaw_Angle.Kp = 2.2;//0.3  1.8
+	PID_Yaw_Angle.Kp = 2.5;//0.3  1.8
 	PID_Yaw_Angle.Ki = 0;
 	PID_Yaw_Angle.Kd = 0;
 	PID_Yaw_Angle.Kd_freq=5.0f;
@@ -262,14 +264,14 @@ static void vPIDParaInit()
 	//角速度环
 	PID_Roll_Rate.Kp = 1.4; //3.2 0.93
 	PID_Roll_Rate.Ki = 0.1;
-	PID_Roll_Rate.Kd = 0.1; //2.5 0.86
+	PID_Roll_Rate.Kd = 0.005; //2.5 0.86
 	PID_Roll_Rate.Kd_freq=100.0f;
 	PID_Roll_Rate.Max_Error=0.0f;
 	PID_Roll_Rate.IntIimit=150.0f;
 	
 	PID_Pitch_Rate.Kp = 1.4;
 	PID_Pitch_Rate.Ki = 0.1;
-	PID_Pitch_Rate.Kd = 0.1;
+	PID_Pitch_Rate.Kd = 0.005;
 	PID_Pitch_Rate.Kd_freq=100.0f;
 	PID_Pitch_Rate.Max_Error=0.0f;
 	PID_Pitch_Rate.IntIimit=150.0f;
@@ -325,6 +327,10 @@ static void vDroneCalibration(void)
 	float gyro_offset[3]={0},acc_offset[3]={0};
 	MPU6050_Calibration(gyro_offset,acc_offset);
 	
+	xLED.status = AlwaysOn;    //常亮
+	xLED.color = YELLOW;
+	vLEDDisplay(&xLED);             //LED更新
+	
 	SaveFloatData(gyro_offset[0],8);
 	SaveFloatData(gyro_offset[1],12);
 	SaveFloatData(gyro_offset[2],16);
@@ -332,6 +338,13 @@ static void vDroneCalibration(void)
 	SaveFloatData(acc_offset[0],20);
 	SaveFloatData(acc_offset[1],24);
 	SaveFloatData(acc_offset[2],28);
+	
+	GPS_Cal();
+	
+	//delay_ms(1000);
+	xLED.status = AlwaysOn;    //常亮
+	xLED.color = RED;
+	vLEDDisplay(&xLED); 
 }
 
 

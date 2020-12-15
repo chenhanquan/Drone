@@ -3,7 +3,7 @@
 #include "arm_math.h"
 
 #define dt 0.01f     //系统运行时间
-#define ANGLE_NUM 0.0008    //加速度计置信参数
+#define ANGLE_NUM 0.001    //加速度计置信参数
 #define YAW_NUM 0.002     //磁力计置信参数
 #define Deg2Rad  0.01745329f
 #define Rad2Deg  57.295779513f

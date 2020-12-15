@@ -2,7 +2,7 @@
 #include "math.h"
 
 #define REMOTE_CHANNELS  8
-#define YAWINT_NUM 0.05               //偏航积分系数
+#define YAWINT_NUM 0.1               //偏航积分系数
 
 #define CONTROL_ANGEL_MAX   35
 #define CONTROL_YAW_MAX     100

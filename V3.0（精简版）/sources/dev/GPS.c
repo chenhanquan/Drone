@@ -19,7 +19,7 @@ u8 START_GPS[12]={0xB5,0x62,0x06,0x04,0x04,0x00,0x00,0x00,0x09,0x00,0x17,0x76};
 u8 GPS_ERR=0;
 
 
-void Init_GPS(void)
+void GPS_Cal(void)
 {
 u8 i=11;
 //model_state=model_state|0x1000;
@@ -126,8 +126,20 @@ while(i--)
 }
 
 
+void GPS_Init(void)
+{
+//设置串口波特率为921600			
+    uart2_init(921600);
+//自动循环接收GPS模块数据	
+	  MYDMA_Config(DMA1_Stream5,DMA_Channel_4,(u32)&USART2->DR,(u32)USART_RX_BUF,USART_REC_LEN,0,1);//DMA1通道6,外设为串口2,存储器为USART_RX_BUF,长度USART_REC_LEN.		
+//	  USART_DMACmd(USART1,USART_DMAReq_Rx,ENABLE);                                      //使能串口2的DMA接收      
+	  MYDMA_Enable(DMA1_Stream5,USART_REC_LEN);
+    while((DMA_GetFlagStatus(DMA1_Stream5,DMA_FLAG_TCIF5)==RESET));
+	 // model_state=model_state&0xEFFF; 
+}
+
 //GPS 数据解析
-void READ_GPS_DATA(void)
+void GPS_ReadData(void)
 {
 //	if((model_state&0x0100)==0x0000)
 //	{
